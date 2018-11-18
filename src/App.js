@@ -26,11 +26,8 @@ class App extends Component {
       upperPageBound: this.state.upperPageBound + this.state.pageBound,
       lowerPageBound: this.state.lowerPageBound + this.state.pageBound
     });
-    // this.setState({lowerPageBound: this.state.lowerPageBound + this.state.pageBound});
     let listid = this.state.upperPageBound + 1;
     this.getProducts(listid)
-    //this.setState({ currentPage: listid});
-    //this.setPrevAndNextBtnClass(listid);
   }
   //按下...計算上一組要產生的分頁數字
   btnDecrementClick = () => {
@@ -38,64 +35,51 @@ class App extends Component {
       upperPageBound: this.state.upperPageBound - this.state.pageBound,
       lowerPageBound: this.state.lowerPageBound - this.state.pageBound
     });
-    //this.setState({lowerPageBound: this.state.lowerPageBound - this.state.pageBound});
     let listid = this.state.upperPageBound - this.state.pageBound;
     this.getProducts(listid)
-    //this.setState({ currentPage: listid});
-    // this.setPrevAndNextBtnClass(listid);
   }
 
   btnPrevClick = () => {
     if ((this.state.currentPage - 1) % this.state.pageBound === 0) {
-      this.setState({ upperPageBound: this.state.upperPageBound - this.state.pageBound });
-      this.setState({ lowerPageBound: this.state.lowerPageBound - this.state.pageBound });
+      this.setState({ 
+        upperPageBound: this.state.upperPageBound - this.state.pageBound,
+        lowerPageBound: this.state.lowerPageBound - this.state.pageBound
+       });
     }
     let listid = this.state.currentPage - 1;
     this.getProducts(listid)
-    // this.setState({ currentPage : listid});
-    // this.setPrevAndNextBtnClass(listid);
   }
 
   btnNextClick = () => {
     if ((this.state.currentPage + 1) > this.state.upperPageBound) {
-      this.setState({ upperPageBound: this.state.upperPageBound + this.state.pageBound });
-      this.setState({ lowerPageBound: this.state.lowerPageBound + this.state.pageBound });
+      this.setState({ 
+        upperPageBound: this.state.upperPageBound + this.state.pageBound,
+        lowerPageBound: this.state.lowerPageBound + this.state.pageBound
+      });
     }
     let listid = this.state.currentPage + 1;
     this.getProducts(listid)
-    //this.setState({ currentPage : listid});
-    //this.setPrevAndNextBtnClass(listid);
   }
   componentDidMount() {
     this.getProducts(1);
-    // $('nav').on('click','li',this.paging)
   }
   componentDidUpdate() {
-    //console.log(this.state.currentPage);
     $("ul li.active").removeClass('active');
     $('ul li#'+this.state.currentPage).addClass('active');
   }
   paging = e => {
     e.preventDefault();
-    // console.log(e.target)
-    // console.log(this)
     this.getProducts($(e.target).text())
   }
   getProducts(page) {
-    // if(page){
-    //   page = "1";
-    // }
     fetch("http://localhost:3000/api/products/" + page)
       .then(res => res.json())
       .then(product => {
         this.setState({
           products: product.datas,
-          totalPage: Math.ceil(product.TotalCount / this.state.perPage),
+          totalPage: Math.ceil(product.TotalCount / this.state.perPage), //計算出總共幾頁
           currentPage: page
         })
-      //  console.log(page) 
-      //  console.log(this.state.totalPage) 
-      //  console.log(this.state.totalPage === parseInt(page))
 
         //計算 prev next 按鈕是否出現
         this.setState({isNextBtnActive: 'disabled'});
@@ -117,12 +101,11 @@ class App extends Component {
   render() {
     const { totalPage, currentPage, perPage, upperPageBound, lowerPageBound, isPrevBtnActive, isNextBtnActive } = this.state;
 
-    //計算總共幾頁
+    //產生頁碼
     const pageNumbers = [];
     for (let i = 1; i <= totalPage; i++) {
       pageNumbers.push(i);
     }
-    //console.log(pageNumbers)
 
     //產生數字的分頁按鈕
     const renderPageNumbers = pageNumbers.map(number => {
@@ -151,19 +134,13 @@ class App extends Component {
 
     //判斷是否產生prev按鈕
     let renderPrevBtn = null;
-    if (isPrevBtnActive !== 'disabled') {
-    //   renderPrevBtn = <li className="page-item"><span id="btnPrev"> Prev </span></li>
-    // }
-    // else {
+    if (isPrevBtnActive !== 'disabled') {    
     renderPrevBtn = <li className="page-item"><a className="page-link" href='#' id="btnPrev" onClick={this.btnPrevClick}> 上一筆 </a></li>
     }
 
     //判斷是否產生next按鈕
     let renderNextBtn = null;
     if (isNextBtnActive !== 'disabled') {
-    //   renderNextBtn = <li className="page-item"><span id="btnNext"> Next </span></li>
-    // }
-    // else {
       renderNextBtn = <li className="page-item"><a className="page-link" href='#' id="btnNext" onClick={this.btnNextClick}> 下一筆 </a></li>
     }
     return (
@@ -180,24 +157,8 @@ class App extends Component {
             </div>
           )}
         </div>
-        {/* {
-          var count = 1
-          for(var x = 0, max = this.state.total; x < max; x+=10){
-             <p>{count}</p>
-             count++;
-          }
-        } */}
         <nav aria-label="Page navigation example">
           <ul className="pagination justify-content-center">
-            {/* <li className="page-item disabled">
-              <a className="page-link" href="#" tabindex="-1">Previous</a>
-            </li>
-            <li className="page-item"><a className="page-link" href="#" onClick={this.paging}>1</a></li>
-            <li className="page-item"><a className="page-link" href="#" onClick={this.paging}>2</a></li>
-            <li className="page-item"><a className="page-link" href="#" onClick={this.paging}>3</a></li>
-            <li className="page-item">
-              <a className="page-link" href="#">Next</a>
-            </li> */}
             {renderPrevBtn}
             {pageDecrementBtn}
             {renderPageNumbers}
